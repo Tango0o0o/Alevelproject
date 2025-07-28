@@ -1,8 +1,12 @@
 <h3>Sign up</h3>
 
-<form method="post" action="">
+{{email_msg}}
+<br>
+{{password_msg}}
+
+<form method="post" action="/signup/">
     {% csrf_token %}
     {{form.as_p}}
 
-    <input type="submit" name="Create User">
+    <input type="submit" name="Sign up">
 </form>
