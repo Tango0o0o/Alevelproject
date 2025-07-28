@@ -1,10 +1,9 @@
 from django import forms # using the built in django forms class
+from .models import User
 
 class SignUpForm(forms.Form):
     email = forms.CharField(label="Email", max_length=100)
     password = forms.CharField(label="Password", widget=forms.PasswordInput())
-
-   
 
     # This validates the email and field before allowing submission
     def is_valid_email(self):
@@ -14,7 +13,7 @@ class SignUpForm(forms.Form):
             return valid_tld
         
         # Checks if there is one "@" symbol
-        if self.data.get("email").count("@") != 1:
+        if self.get_email().count("@") != 1:
             return "Email must contain one @"
         
         valid_domain = self.check_domain()
@@ -25,14 +24,18 @@ class SignUpForm(forms.Form):
         if valid_local != True:
             return valid_local
         
-        if len(self.data.get("email")) >= 100:
+        if len(self.get_email()) >= 100:
             return "Email must be less than 100 characters"
+        
+        duplicate = self.duplicate_email()
+        if duplicate != False:
+            return duplicate
         
         return True
     
     # Checks if a password is valid based on criteria
     def is_valid_password(self):
-        password = self.data.get("password").strip()
+        password = self.get_password().strip()
         
         if len(password) < 8:
             return "Password must be at least 8 characters"
@@ -61,7 +64,6 @@ class SignUpForm(forms.Form):
         alphanum = True 
         for letter in password:
             if not letter.isalnum():
-                print("Alnum")
                 alphanum = False
                 break
         
@@ -73,19 +75,19 @@ class SignUpForm(forms.Form):
     # Checks if there is a valid TLD
     def is_TLD(self):
    
-        if self.data.get("email").find(".com") == -1 and self.data.get("email").find(".uk") == -1:
+        if self.get_email().find(".com") == -1 and self.get_email().find(".uk") == -1:
             return "Email must be UK valid ending in .uk or .com"
 
         return True
     
     # Checks for a domain after the @ sign
     def check_domain(self):
-        at_index = self.data.get("email").find("@")
-        tld_index = self.data.get("email").find(".com")
+        at_index = self.get_email().find("@")
+        tld_index = self.get_email().find(".com")
         
         # Will be either .com or .uk, if finding .com return -1, then .uk must be in there
         if tld_index == -1:
-            tld_index = self.data.get("email").find(".uk")
+            tld_index = self.get_email().find(".uk")
         
         # If the TLD and @ are next to each other, meaning nothing is inbetween, there is no domain
         if tld_index - at_index == 1: 
@@ -95,6 +97,24 @@ class SignUpForm(forms.Form):
     
     # Checks if there is a local domain before the "@" sign
     def check_local(self):
-        if self.data.get("email").find("@") == 0:
+        if self.get_email().find("@") == 0:
             return "Email must contain a local domain before the '@' sign"
         return True
+
+    # Checks if this is email already in the system
+    def duplicate_email(self):
+
+        # This filters the user objects by the stated value 'email'
+        # .exists() returs a boolean if there is anything in the queryset from .filter()
+        if User.objects.filter(email=self.get_email()).exists():
+            return "An account with this email already exists"
+        else:
+            return False
+    
+    # Returns email in this form
+    def get_email(self):
+        return self.data.get("email")
+    
+    # Returns plaintext password in this form
+    def get_password(self):
+        return self.data.get("password")

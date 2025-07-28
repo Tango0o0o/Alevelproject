@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
 from .forms import SignUpForm
-
+from .models import User
+import bcrypt
 
 def statball(req):
     return render(req, "default.html", {"name" : "John"})
@@ -18,7 +19,6 @@ def signup(req):
     if req.method == "POST":
         form = SignUpForm(req.POST)
         
-        
         valid_email = form.is_valid_email()
 
         if valid_email != True:
@@ -29,6 +29,13 @@ def signup(req):
         if valid_pass != True:
             password_msg = valid_pass
 
+        # The salt is a random value added to the password before hashing
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(form.get_password().encode(), salt)
 
+        if valid_email and valid_pass:
+            user = User(email=form.get_email(),password=hashed_password)
+            user.save()
+        
 
     return render(req, "accounts/signup.html", {"form":form, "email_msg":email_msg, "password_msg":password_msg})

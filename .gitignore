@@ -1,0 +1,12 @@
+# Tells git what files to ignore
+
+# Ignore virtual environment files files
+StatballEnvironment/
+
+# Ignore __pycache__ folders
+__pycache__/
+*/__pycache__/
+**/__pycache__/
+
+# Ignore .pyc files
+*.pyc
