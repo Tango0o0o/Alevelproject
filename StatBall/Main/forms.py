@@ -2,8 +2,21 @@ from django import forms # using the built in django forms class
 from .models import User
 
 class SignUpForm(forms.Form):
-    email = forms.CharField(label="Email", max_length=100)
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+    email = forms.CharField(max_length=100, 
+        label="",
+                            
+        widget=forms.TextInput(
+        attrs={
+            "placeholder" : "Email"
+        }
+    ))
+
+    password = forms.CharField(
+        label="",
+        widget=forms.PasswordInput(
+            attrs={"placeholder" : "Password"}
+            )
+    )
 
     # This validates the email and field before allowing submission
     def is_valid_email(self):
@@ -69,7 +82,7 @@ class SignUpForm(forms.Form):
         
         if alphanum == True:
             return "Password must contain at least one special character"
-
+        
         return True
 
     # Checks if there is a valid TLD

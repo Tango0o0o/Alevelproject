@@ -1,12 +1,37 @@
-<h3>Sign up</h3>
+{% extends 'base.html' %}
+{% load static %}
 
-{{email_msg}}
-<br>
-{{password_msg}}
+<!DOCTYPE html>
 
-<form method="post" action="/signup/">
-    {% csrf_token %}
-    {{form.as_p}}
+<html lang="en">
+     
 
-    <input type="submit" name="Sign up">
-</form>
+        
+        {% block head %}
+            <title>{%block title%}Sign up{% endblock %}</title>
+            <link rel="stylesheet" href="{% static 'styling/signup.css' %}">
+        {% endblock %}
+
+
+
+        {% block main-content %}
+
+            <h3>Sign up</h3>
+
+            {{email_msg}}
+            <br>
+            {{password_msg}}
+
+            <form method="post" action="/signup/">
+                {% csrf_token %}
+                {{form.as_p}}
+
+                <input type="submit" name="Sign up" class="btn btn-success">
+            </form>
+
+        {% endblock %}
+
+        
+
+
+</html>

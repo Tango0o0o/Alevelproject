@@ -1,0 +1,15 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+#main-content {
+    background-color: aqua;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}

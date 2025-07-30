@@ -29,8 +29,7 @@ def signup(req):
         if valid_pass != True:
             password_msg = valid_pass
 
-        print(valid_email)
-        print(valid_pass)
+       
         # The salt is a random value added to the password before hashing
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(form.get_password().encode(), salt)
