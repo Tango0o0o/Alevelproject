@@ -2,31 +2,19 @@ body {
     margin: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-
     height: 100vh;
 }
-
-
 
 #bottom {
     display: flex;
-    align-items: stretch;
-    justify-content: stretch;
-    
-    width: 100%;
     height: 100vh;
 }
-/* 
-#bottom > * {
-} */
 
-
+/* Navbar doesn't need to grow */
 #navbar {
     background-color: red;
     flex-basis: 60px;
-    width: 100%;
+
 }
 
 #main-content {
@@ -36,10 +24,11 @@ body {
     justify-content: center;
     text-align: center;
 
-    flex: 1 3;
+    flex: 1 1; /* Main content can grow to fill rest of the space */
 }
 
 
+/* Sidebar won't need to grow, otherwise it'd look distorted */
 #sidebar {
     background-color: blue;
     flex-basis: 150px;
