@@ -69,7 +69,7 @@ class SignUpForm(forms.Form):
         
         if alphanum == True:
             return "Password must contain at least one special character"
-        
+
         return True
 
     # Checks if there is a valid TLD

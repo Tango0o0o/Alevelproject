@@ -20,7 +20,7 @@ def signup(req):
         form = SignUpForm(req.POST)
         
         valid_email = form.is_valid_email()
-
+        
         if valid_email != True:
             email_msg = valid_email
         
@@ -29,13 +29,17 @@ def signup(req):
         if valid_pass != True:
             password_msg = valid_pass
 
+        print(valid_email)
+        print(valid_pass)
         # The salt is a random value added to the password before hashing
         salt = bcrypt.gensalt()
         hashed_password = bcrypt.hashpw(form.get_password().encode(), salt)
 
-        if valid_email and valid_pass:
+        if valid_email == True and valid_pass == True:
             user = User(email=form.get_email(),password=hashed_password)
             user.save()
+            return redirect("home")
+
         
 
     return render(req, "accounts/signup.html", {"form":form, "email_msg":email_msg, "password_msg":password_msg})
