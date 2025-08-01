@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from .forms import SignUpForm
+from .forms import SignUpForm, LoginForm
 from .models import User
 import bcrypt
 
@@ -42,3 +42,8 @@ def signup(req):
         
 
     return render(req, "accounts/signup.html", {"form":form, "email_msg":email_msg, "password_msg":password_msg})
+
+def login(req):
+    login_form = LoginForm()
+
+    return render(req, "accounts/login.html", {"login_form": login_form})

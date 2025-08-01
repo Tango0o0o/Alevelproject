@@ -1,6 +1,7 @@
 from django import forms # using the built in django forms class
 from .models import User
 
+
 class SignUpForm(forms.Form):
     
     email = forms.CharField(max_length=100, 
@@ -136,3 +137,26 @@ class SignUpForm(forms.Form):
     # Returns plaintext password in this form
     def get_password(self):
         return self.data.get("password")
+
+class LoginForm(forms.Form):
+
+    email = forms.CharField(max_length=100, 
+        label="",
+                            
+        widget=forms.TextInput(
+        attrs={
+            "placeholder" : "Email",
+            "class" : "form-control"
+        }
+    ))
+
+    password = forms.CharField(
+        label="",
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder" : "Password",
+                "class" : "form-control form-input"
+                }
+            )
+    )
+
