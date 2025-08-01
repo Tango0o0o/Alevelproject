@@ -17,15 +17,20 @@
         {% block main-content %}
 
 
-            {{email_msg}}
-            <br>
-            {{password_msg}}
+            
 
             <div class="form-container">
-                <h3>Sign up</h3>
 
                 <form class="form-group" method="post" action="/signup/">
                     {% csrf_token %}
+                    <h3>Sign up</h3>
+
+                    <ul>
+                        <li>{{email_msg}}</li>
+                        <li>{{password_msg}}</li>
+                    </ul>
+                    
+                    
                     {{form.as_p}}
 
                     <input type="submit" name="Sign up" class="btn btn-success form-control">

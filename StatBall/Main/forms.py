@@ -92,8 +92,8 @@ class SignUpForm(forms.Form):
 
     # Checks if there is a valid TLD
     def is_TLD(self):
-   
-        if self.get_email().find(".com") == -1 and self.get_email().find(".uk") == -1:
+ 
+        if self.get_email()[:-4] != ".com" and self.get_email()[:-4] != ".uk":
             return "Email must be UK valid ending in .uk or .com"
 
         return True
