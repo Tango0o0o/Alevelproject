@@ -5,6 +5,24 @@ body {
     height: 100vh;
 }
 
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    width: 50%;
+    max-width: 560px;
+
+    border: solid 1px rgb(220, 220, 230);
+    border-radius: 7px;
+    background-color: rgb(245, 245, 250);
+
+    padding: 48px;
+}
+
+input {
+    height: 48px;
+}
+
 #bottom {
     display: flex;
     height: 100vh;
@@ -18,10 +36,11 @@ body {
 }
 
 #main-content {
-    background-color: green;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     text-align: center;
 
     flex: 1 1; /* Main content can grow to fill rest of the space */
@@ -33,3 +52,4 @@ body {
     background-color: blue;
     flex-basis: 150px;
 }
+

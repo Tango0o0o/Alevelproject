@@ -2,19 +2,24 @@ from django import forms # using the built in django forms class
 from .models import User
 
 class SignUpForm(forms.Form):
+    
     email = forms.CharField(max_length=100, 
         label="",
                             
         widget=forms.TextInput(
         attrs={
-            "placeholder" : "Email"
+            "placeholder" : "Email",
+            "class" : "form-control"
         }
     ))
 
     password = forms.CharField(
         label="",
         widget=forms.PasswordInput(
-            attrs={"placeholder" : "Password"}
+            attrs={
+                "placeholder" : "Password",
+                "class" : "form-control form-input"
+                }
             )
     )
 
