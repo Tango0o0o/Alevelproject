@@ -46,4 +46,10 @@ def signup(req):
 def login(req):
     login_form = LoginForm()
 
+
+    if req.method == "POST":
+        login_form = LoginForm(req.POST)
+
+        print(login_form.validate())
+
     return render(req, "accounts/login.html", {"login_form": login_form})
