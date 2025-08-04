@@ -23,14 +23,15 @@
 
                 <form class="form-group" method="post" action="/login/">
                     {% csrf_token %}
+                  
                     <h3>Login</h3>
 
-                    <!-- <ul>
-                        <li>{{email_msg}}</li>
-                        <li>{{password_msg}}</li>
-                    </ul> -->
-                    
-                    
+                    <ul>
+                        <li>{{message}}</li>
+                    </ul>
+                   
+
+                                        
                     {{login_form.as_p}}
 
                     <input type="submit" name="Login" class="btn btn-success form-control">

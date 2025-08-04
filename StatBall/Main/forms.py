@@ -161,7 +161,7 @@ class LoginForm(forms.Form):
     )
     
     # This checks if an object with the entered email exists in the system. If so, then it checks if the password associated with the account matches with the one entered.
-    def validate(self):
+    def authenticate(self):
         user = User.objects.filter(email=self.get_email()) # Returs a query set
 
         if user.exists(): # Checks of there is anything in the query set
@@ -173,9 +173,9 @@ class LoginForm(forms.Form):
 
             valid_password = bcrypt.checkpw(entered_password_bytes, account_password) # return True if they match
         
-            return valid_password
+            return [valid_password, user]
 
-        return False
+        return [False]
         
     # Returns email in this form
     def get_email(self):
