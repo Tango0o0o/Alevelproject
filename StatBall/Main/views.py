@@ -5,14 +5,21 @@ from .forms import SignUpForm, LoginForm
 from .models import User
 import bcrypt
 
-def statball(req):
-    return render(req, "default.html", {"name" : "John"})
+
+# Extra functions
 
 # Checks if there is a user logged in
 def is_logged_in(req):
     if req.session.get("user_id"): # Checks if a user id exists in the session
         return True
     return False
+
+
+# The actual views that lead to pages
+
+def statball(req):
+    print(is_logged_in(req))
+    return render(req, "default.html", {"name" : f"{str(is_logged_in(req))}"})
 
 # Here, validation and user creation takes place
 def signup(req):
@@ -78,3 +85,12 @@ def login(req):
             message = "No matching account found"
 
     return render(req, "accounts/login.html", {"login_form": login_form, "message":message}) # returning the webpage
+
+
+# Logs the user out by clearing the session
+def logout(req):
+    
+    if is_logged_in(req): # Only execute the process of the users is actually logged in
+        req.session.flush()
+    
+    return redirect("home")
