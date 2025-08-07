@@ -1,5 +1,6 @@
 from django import forms # using the built in django forms class
 from .models import User
+import bcrypt
 
 class SignUpForm(forms.Form):
     
@@ -136,3 +137,51 @@ class SignUpForm(forms.Form):
     # Returns plaintext password in this form
     def get_password(self):
         return self.data.get("password")
+
+class LoginForm(forms.Form):
+
+    email = forms.CharField(max_length=100, 
+        label="",
+                            
+        widget=forms.TextInput(
+        attrs={
+            "placeholder" : "Email",
+            "class" : "form-control"
+        }
+    ))
+
+    password = forms.CharField(
+        label="",
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder" : "Password",
+                "class" : "form-control form-input"
+                }
+            )
+    )
+    
+    # This checks if an object with the entered email exists in the system. If so, then it checks if the password associated with the account matches with the one entered.
+    def authenticate(self):
+        user = User.objects.filter(email=self.get_email()) # Returs a query set
+
+        if user.exists(): # Checks of there is anything in the query set
+
+            user = user[0] # gets the user object in the queryset
+      
+            entered_password_bytes = self.get_password().encode() 
+            account_password = user.password[2:-1].encode() # removing the bytes literal from the password in the DB
+
+            valid_password = bcrypt.checkpw(entered_password_bytes, account_password) # return True if they match
+        
+            return [valid_password, user]
+
+        return [False]
+        
+    # Returns email in this form
+    def get_email(self):
+        return self.data.get("email")
+    
+    # Returns plaintext password in this form
+    def get_password(self):
+        return self.data.get("password")
+    

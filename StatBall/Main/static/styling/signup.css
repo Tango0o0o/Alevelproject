@@ -16,7 +16,8 @@ input {
     text-decoration: none;
 }
 
-ul > * {
+ul {
     list-style-type: none;
     font-size: 17px;
+    padding-left: 0;
 }

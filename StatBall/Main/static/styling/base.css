@@ -11,6 +11,7 @@ body {
     gap: 36px;
     width: 50%;
     max-width: 560px;
+    min-width: 200px;
 
     border: solid 1px rgb(220, 220, 230);
     border-radius: 7px;
@@ -32,7 +33,7 @@ input {
 #navbar {
     background-color: red;
     flex-basis: 60px;
-
+    min-width: 200px;
 }
 
 #main-content {
@@ -53,3 +54,8 @@ input {
     flex-basis: 150px;
 }
 
+@media (max-width: 600px) {
+    #sidebar {
+        display: none;
+    }
+}
