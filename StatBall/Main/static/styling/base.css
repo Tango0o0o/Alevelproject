@@ -3,6 +3,24 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    min-width: 320px;
+}
+
+input {
+    height: 48px;
+}
+
+
+/* Main content CSS */
+#main-content {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    flex: 1 1; /* Main content can grow to fill rest of the space */
 }
 
 .form-container {
@@ -20,33 +38,75 @@ body {
     padding: 48px;
 }
 
-input {
-    height: 48px;
-}
-
+/* Organises the sidebar and main content */
 #bottom {
     display: flex;
     height: 100vh;
 }
 
+
+/* Navbar and everything on it */
 /* Navbar doesn't need to grow */
 #navbar {
     background-color: red;
-    flex-basis: 60px;
-    min-width: 200px;
-}
+    flex-basis: 55px;
 
-#main-content {
 
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    padding: 0;
 
-    flex: 1 1; /* Main content can grow to fill rest of the space */
+
+    flex-wrap: nowrap;
+
 }
 
+#left{
+
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    flex: 1 10;
+
+}
+
+#title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#center {
+    padding: 10px;
+    flex: 1 1;
+}
+
+#center > input {
+    border-radius: 20px;
+    height: 40px;
+}
+
+#right {
+    flex: 1 1;
+}
+
+.nav-item > a {
+    text-decoration: none;
+    color: black;
+}
+
+#right > ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+
+    justify-content: flex-end;
+    gap: 20px;
+    padding-right: 20px;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+/* Sidebar CSS */
 
 /* Sidebar won't need to grow, otherwise it'd look distorted */
 #sidebar {
@@ -58,4 +118,23 @@ input {
     #sidebar {
         display: none;
     }
+
+    #left{
+        flex: 0;
+    }
+
+    .form-container {
+        width: 75%;
+    }
+}
+
+@media (max-width: 447px) {
+    /* Here, add in the humburger icon for the right side */
+}
+
+@media (max-width: 400px) {
+    .form-container {
+        padding: 24px;
+    }
+
 }

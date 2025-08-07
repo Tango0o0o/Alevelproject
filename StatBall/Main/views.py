@@ -16,15 +16,22 @@ def is_logged_in(req):
 
 
 # The actual views that lead to pages
-
 def statball(req):
-    print(is_logged_in(req))
-    return render(req, "default.html", {"name" : f"{str(is_logged_in(req))}"})
+    # Passing through the required variables.
+    return render(req, 
+                  "default.html", 
+                  { # This is a dictionary passing in variabled into the template
+                      "logged_in" : is_logged_in(req),  # Boolean
+                      "user" : req.session.get("user_id"),
+                    }
+                  ) 
 
 # Here, validation and user creation takes place
 def signup(req):
 
-    if is_logged_in(req): # if logged in, you can't sign up
+    logged_in = is_logged_in(req)
+
+    if logged_in: # if logged in, you can't sign up
        return redirect("home")
 
     form = SignUpForm()
@@ -58,12 +65,20 @@ def signup(req):
             return redirect("home")
 
     
-    return render(req, "accounts/signup.html", {"form":form, "email_msg":email_msg, "password_msg":password_msg})
+    return render(req, "accounts/signup.html", 
+        {
+            "form":form, 
+            "email_msg":email_msg, 
+            "password_msg":password_msg,
+            "logged_in" : logged_in
+        })
 
 # Authenticates the user and creates a new session
 def login(req):
 
-    if is_logged_in(req):
+    logged_in = is_logged_in(req)
+
+    if logged_in:
         return redirect("home")
 
     login_form = LoginForm()
@@ -84,8 +99,11 @@ def login(req):
         else:
             message = "No matching account found"
 
-    return render(req, "accounts/login.html", {"login_form": login_form, "message":message}) # returning the webpage
-
+    return render(req, "accounts/login.html", 
+        {"login_form": login_form, 
+         "message":message,
+         "logged_in" : logged_in
+         }) # returning the webpage
 
 # Logs the user out by clearing the session
 def logout(req):
