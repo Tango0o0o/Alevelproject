@@ -9,16 +9,95 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Statball | {%block title%}{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'styling/base.css' %}">
+
+        <link rel="icon" type="image" href="{% static 'images/logo.png' %}">
+
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
         {% block head %}{% endblock %}
     </head>
 
     <body>
         <!-- Used a nested flexbox of "bottom" inside the body to arrange in column, then row -->
-        <div id="navbar"></div>
+        
+        {% if logged_in %}
+        <div class="sidebar">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+            <span class="fs-4">Statball</span>
+            </a>
+            <hr>
+            <ul class   ="nav nav-pills flex-column mb-auto">
+            <li>
+                <a href="#" class="nav-link link-dark">
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"></use></svg>
+                Previous analysis
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link link-dark">
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+                Add to database
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link link-dark" aria-current="page">
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"></use></svg>
+                Predict match outcome
+                </a>
+            </li>
+            <li>
+                <a href="/similar-players" class="nav-link link-dark">
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"></use></svg>
+                Find similar players
+                </a>
+            </li>
+            <li>
+                <a href="#" class="nav-link link-dark">
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"></use></svg>
+                Predict player performance
+                </a>
+            </li>
+            </ul>
+            
+        </div>
+        {% endif %}
 
-        <div id="bottom">
-            <div id="sidebar"></div>
+        <div id="right">
+            <div id="navbar" class="navbar navbar-expand-lg navbar-light ">
+
+
+                        <div id="center">
+                            <input class="form-control" type="search" placeholder="Search">
+                        </div>
+
+                        <div id="right">
+
+                            <ul class="navbar-nav mr-auto">
+
+
+                                <!-- Selection statement to display relevant links on whether the user is logged in or not -->
+
+                                {% if logged_in %}  <!-- If this is true, then show the logout links only -->
+                                    <li class="nav-item active"> 
+                                        <a href="/logout">Logout</a>
+                                    </li>
+
+                                {% else %} <!-- Else, it must be false, so show the login and sign up links-->
+                                    <li class="nav-item active">
+                                        <a href="/login">Login</a>
+                                    </li>
+
+                                    <li class="nav-item active">
+                                        <a href="/signup">Sign up</a>
+                                    </li>
+                                {% endif %}
+
+                                
+                            </ul>
+                        </div>
+
+                    </div>
+            
             
             <div id="main-content">
                 {% block main-content %}{% endblock %}
@@ -26,6 +105,8 @@
 
         </div>
 
+
+        
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
     </body>
 </html>
