@@ -1,6 +1,8 @@
 from django import forms # using the built in django forms class
 from .models import User
 import bcrypt
+import requests as req
+YOUR_TOKEN = "p7pnma41hZ54JY3pwMd1GXh3cWykgQYiqUzdVcOlxVcLsvfXblU5B4oTT76M"
 
 class SignUpForm(forms.Form):
     
@@ -94,7 +96,7 @@ class SignUpForm(forms.Form):
     # Checks if there is a valid TLD
     def is_TLD(self):
  
-        if self.get_email()[:-4] != ".com" and self.get_email()[:-4] != ".uk":
+        if self.get_email()[-4:] != ".com" and self.get_email()[-3:] != ".uk":
             return "Email must be UK valid ending in .uk or .com"
 
         return True
@@ -185,3 +187,53 @@ class LoginForm(forms.Form):
     def get_password(self):
         return self.data.get("password")
     
+class SimilarPlayersForm(forms.Form):
+
+    # Reused from email + password
+    player_name = forms.CharField(max_length=60,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder" : "Enter players full name",
+                "class" : "form-control"
+            }
+    ))
+
+    team_name = forms.CharField(max_length=60,
+        label="",
+        widget=forms.TextInput(
+            attrs={
+                "placeholder" : "Enter teams full name",
+                "class" : "form-control"
+            }
+    ))
+
+    # Returns email in this form
+    def get_team_id(self):
+        requested_team = self.data.get("team_name")
+        
+        # Because the user will input a string, we will find a list of the closest matches to the input, and select the top one
+        get_teams__url = f"https://api.sportmonks.com/v3/football/teams/search/{requested_team}?api_token={YOUR_TOKEN}"
+        data = req.get(get_teams__url).json()
+
+        if "message" in data: # If theres a message, theres an error
+            return False
+
+        team_id = data["data"][0]["id"]
+
+        return team_id
+
+    # Returns plaintext player name in this form
+    def get_player_id(self):
+        requested_player = self.data.get("player_name")
+        # Because the user will input a string, we will find a list of the closest matches to the input, and select the top one
+        get_players_url = f"https://api.sportmonks.com/v3/football/players/search/{requested_player}?api_token={YOUR_TOKEN}"
+
+        data = req.get(get_players_url).json()
+        
+        if "message" in data: # If theres a message, theres an error
+            return False
+        
+        player_id = data["data"][0]["id"]
+
+        return player_id

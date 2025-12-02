@@ -1,7 +1,7 @@
 body {
     margin: 0;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     min-width: 320px;
 }
@@ -20,7 +20,7 @@ input {
     align-items: center;
     text-align: center;
 
-    flex: 1 1; /* Main content can grow to fill rest of the space */
+    flex: 2 1; /* Main content can grow to fill rest of the space */
 }
 
 .form-container {
@@ -48,30 +48,18 @@ input {
 /* Navbar and everything on it */
 /* Navbar doesn't need to grow */
 #navbar {
-    background-color: red;
     flex-basis: 55px;
+
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.15);
 
 
     display: flex;
+    justify-content: center;
     padding: 0;
 
 
     flex-wrap: nowrap;
 
-}
-
-#left{
-
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    flex: 1 10;
-
-}
-
-#title {
-    font-size: 20px;
-    font-weight: bold;
 }
 
 #center {
@@ -87,6 +75,22 @@ input {
 #right {
     flex: 1 1;
 }
+
+#left{
+
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    flex: 1 10 250px;
+
+}
+
+#title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
 
 .nav-item > a {
     text-decoration: none;
@@ -109,9 +113,10 @@ input {
 /* Sidebar CSS */
 
 /* Sidebar won't need to grow, otherwise it'd look distorted */
-#sidebar {
-    background-color: blue;
-    flex-basis: 150px;
+.sidebar {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    padding-top: 10px;
+    flex-shrink: 10;
 }
 
 @media (max-width: 600px) {
