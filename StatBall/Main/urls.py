@@ -9,5 +9,6 @@ urlpatterns = [
     # path("predict-match/", views.pred_match, name="predict-match"),
     path("logout/", views.logout, name="logout"),
     path("similar-players/", views.sim_players, name="similar-players"),
-    # path("predict-player/", views.pred_player, name="predict-player"),
+    path("predict-player/", views.pred_player, name="predict-player"), 
+    path("predict-performance-result/", views.pred_performance_result, name="predict-performance-result"),
 ]

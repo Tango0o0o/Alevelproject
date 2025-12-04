@@ -8,12 +8,16 @@ input {
 }
 
 .form-container {
+    width: 50%;
+    max-width: 560px;
     margin-bottom: 80px;
+    margin-top: 50px;
 }
 
 .form-container > a{
     font-size: 15px;
     text-decoration: none;
+    
 }
 
 ul {

@@ -1,0 +1,29 @@
+.e {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    column-gap: 50px;
+}
+
+.input-group>.form-control, .input-group>.form-floating, .input-group>.form-select {
+    min-width: 150px;
+}
+
+#main-content {
+
+    justify-content: flex-start;
+    align-items: flex-start;
+
+}
+
+.form-container {
+    margin-top: 0px;
+    width: 100%;
+    max-width: none;
+    border-radius: 0px;
+    max-height: 92vh; /* or e.g. 90vh */
+    overflow-y: auto;
+}
+
+.input-group-text {
+    max-height: 48px;
+}

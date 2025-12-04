@@ -189,6 +189,7 @@ class LoginForm(forms.Form):
     
 class SimilarPlayersForm(forms.Form):
 
+
     # Reused from email + password
     player_name = forms.CharField(max_length=60,
         label="",
@@ -237,3 +238,8 @@ class SimilarPlayersForm(forms.Form):
         player_id = data["data"][0]["id"]
 
         return player_id
+    
+class PredictPlayerPerformanceForm(SimilarPlayersForm): # Just inherit stuff from the Similar players form
+    
+    team_name = None # except we don't need a team name
+    
