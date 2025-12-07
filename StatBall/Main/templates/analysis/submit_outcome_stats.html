@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+        {% block head %}
+            <title>Statball | {%block title%}Predict outcome{% endblock %}</title>
+            <link rel="stylesheet" href="{% static 'styling/analysis.css' %}">
+            <link rel="stylesheet" href="{% static 'styling/pred_performance.css' %}">
+        {% endblock %}
+        
+        {% block main-content %}
+            
+            <div id="outcome">
+                {% if value %}
+                    {% if value == 2 %}
+                        <h2>{{team_name}} will win their next game</h2>
+                    {% elif value == 1 %}
+                        <h2>{{team_name}} will draw their next game</h2>
+                    {% else %}
+                        <h2>{{team_name}} will lose their next game</h2>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <div class="form-container">
+
+                <form class="form-group" method="post" action="/predict-match-result/">
+                    {% csrf_token %}
+                    <h3>Enter team stats</h3>
+
+                    <div class="e">
+                        
+                        {% for c_name, value  in cleaned_data_dict.items %}
+                            <div class="input-group input-group-sm mb-3 grid">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">{{ c_name }}</span>
+                                <input type="number" name="{{ c_name }}" value="{{ value }}" class="form-control stat-input" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                            </div>     
+                        {% endfor %}
+
+                        {% for c_name in column_names %}
+                        <div class="input-group input-group-sm mb-3 grid">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">{{ c_name }}</span>
+                            <input type="number" name="{{ c_name }}" class="form-control stat-input" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <input type="submit" name="Sign up" class="btn btn-success form-control">
+                    
+                    {% if django_path %}
+                        <a><img src="{% static django_path %}" alt="Bar chart"></a>
+                    {% elif error %}
+                        <h4>{{ error }}</h4>
+                    {% endif %}
+
+                </form>
+            </div>
+
+            
+        {% endblock %}
+</html>

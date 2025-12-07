@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.template import loader
-from .forms import SignUpForm, PredictPlayerPerformanceForm, LoginForm, SimilarPlayersForm
+from .forms import SignUpForm, PredictPlayerPerformanceForm, LoginForm, SimilarPlayersForm, PredictMatchOutcomeForm
 from .models import User
 import bcrypt
 import pandas as pd
@@ -18,11 +18,12 @@ from io import BytesIO
 import plotly.graph_objects as go
 import plotly.express as px
 import time
-from .learning_models import PredictPlayerPerformance
+from .learning_models import PredictPlayerPerformance, PredictOutcome
 
 YOUR_TOKEN = "p7pnma41hZ54JY3pwMd1GXh3cWykgQYiqUzdVcOlxVcLsvfXblU5B4oTT76M"
 
 pred_player_models_temp = {} # holds the machine learning models for each user
+pred_outcome_models_temp = {} # holds the machine learning models for each user
 # Extra functions
 
 # Checks if there is a user logged in
@@ -130,12 +131,8 @@ def logout(req):
     
     return redirect("home")
 
-def pred_match(req):
-    pass
 
 def sim_players(req):
-
-
     if req.method == "GET":
         form = SimilarPlayersForm() # Input for the user
          
@@ -459,7 +456,6 @@ def sim_players(req):
             "django_path" : django_path
             })
 
-
 def pred_player(req):
     
     if req.method == "GET": # if not a form, create one for the user
@@ -523,3 +519,71 @@ def pred_performance_result(req):
             })
     else: # if not a form input, user shouldn't be here
         return redirect("predict-player")
+
+def pred_match(req):
+    if req.method == "GET":
+        form = PredictMatchOutcomeForm() # Input for the user
+         
+        return render(req, "analysis\pred_outcome.html", {"form": form, "logged_in" : is_logged_in(req)}) # show the page
+    else:
+        form = PredictMatchOutcomeForm(req.POST) # otherwise get the form input
+        team_id = form.get_team_id() # Get the new players ID
+
+        if team_id == False: # If its false, theres an error, most likely no results found.
+            return render(req, "analysis\pred_outcome.html", 
+            {
+            "form": form,
+            "logged_in" : is_logged_in(req),
+            "error" : "Please enter valid player name."
+            })
+        else: # Otherwise
+            pred_outcome = PredictOutcome(team_id=team_id) # Setup the ML model for this team
+            pred_outcome.get_data()
+            pred_outcome.create_model() # Create the model
+            column_names = pred_outcome.columns # Get the column names of the stats the model uses
+
+            pred_outcome_models_temp[req.session.get("user_id")] = pred_outcome # save the model into a dictionary so it can be used across different views
+            return render(req, "analysis\submit_outcome_stats.html", # return the page
+                {
+                    "logged_in" : is_logged_in(req),
+                    "column_names": column_names,
+                })
+
+def pred_match_result(req):
+    if req.method == "POST": # if a form input
+        cleaned_data_dict = {}
+
+        pred_outcome = pred_outcome_models_temp[req.session.get("user_id")] # get the ML model for the user
+
+        for key, value in req.POST.items():
+            if key == "csrfmiddlewaretoken" or key == "Sign up": # ignore these, they're part of the form but not for the model
+                continue
+            
+            # set each column name to its value in the dict
+            # if there is no input, assume it is 0
+            if not value.strip():
+                cleaned_data_dict[key] = float(0)
+            else:
+                cleaned_data_dict[key] = float(value)
+
+        stats = list(cleaned_data_dict.values())
+
+        final_index = pred_outcome.final_outcome([stats]) # predict the rating
+        #django_path = pred_player.bar_chart(req) # get the image path of the bar chart
+
+
+        # put it on the page
+        return render(req, "analysis\submit_outcome_stats.html", 
+            {
+            "form": req.POST,
+            "logged_in" : is_logged_in(req),
+          #  "django_path" : django_path, # bar chart image path to display on page
+            "cleaned_data_dict": cleaned_data_dict, 
+            "value" : final_index, # final index, decides whether it was a win draw or loss
+            "team_name" : pred_outcome.team_name 
+            # Passing through the column names & values back into the page so the user doesn't have to reenter every value if they want to adjust parameters
+            })
+    else: # if not a form input, user shouldn't be here
+        return redirect("predict-match")
+
+

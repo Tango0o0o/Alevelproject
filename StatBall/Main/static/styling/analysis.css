@@ -1,3 +1,7 @@
 .form-container {
     margin-top: 20px;
 }
+
+#outcome {
+    margin: auto;
+}

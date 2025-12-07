@@ -53,6 +53,282 @@ class Type_finder():
         result = self.type_search(types_data, self.id)
         return result
 
+class PredictOutcome():
+
+    def __init__(self, team_id, games=3):
+        self.team_id = team_id
+        self.team_name = None
+        self.games = games
+        self.stats = None
+        self.mean = None
+        self.std = None
+        self.columns = None
+        
+    def get_data(self):
+        team_id = self.team_id
+        games = self.games # number of recent results to use for ML
+        team_results = requests.get(f"https://api.sportmonks.com/v3/football/teams/{team_id}?api_token={YOUR_TOKEN}&include=latest.statistics;latest.participants").json() # Teams results
+        stats = {}
+
+        with open("temp2.json", "w") as f:
+            f.write(json.dumps(team_results, indent=4))
+        self.team_name = team_results["data"]["name"]
+        
+        loss = False
+        draw = False
+        win = False
+
+        for i in range(0, games):
+            
+            participants = {}
+
+            for participant in team_results["data"]["latest"][i]["participants"]: # for team in each match
+                participants[participant["id"]] = participant # set the team id to the team
+                if participant["id"] != team_id: # if its not the target team
+                    opponent_id = participant["id"] # set the opponents id to the id
+
+            opponent_winner = participants[opponent_id]["meta"]["winner"] # bool, whether they won or not
+            team_winner = participants[team_id]["meta"]["winner"]
+
+            if opponent_winner == team_winner: # equal means both false, meaning a draw
+                if draw: # if we already have a draw result, skip
+                    continue
+                outcome = [0, 1, 0] # index 1 = draw
+                draw = True
+            elif opponent_winner:
+                if loss: 
+                    continue
+                outcome = [1, 0, 0] # index 0 = loss
+                loss = True
+            else: 
+                if win: 
+                    continue
+                outcome = [0, 0, 1] # index 2 = win
+                win = True
+
+            match = team_results["data"]["latest"][i] # Get results in the specified range
+            match_stats = {} # Stats for each game
+            
+            if participants[team_id]["meta"]["location"] == "home": # is home stat
+                is_home = 1
+            else:
+                is_home = 0
+
+            # This may break if it tries to fetch it from a cup game.
+            opponent_position = participants[opponent_id]["meta"]["position"] # position of the teams
+            team_position = participants[team_id]["meta"]["position"] 
+
+            # adding stuff to the stats
+            match_stats["Outcome"] = outcome
+            match_stats["Is Home"] = is_home
+            match_stats["Team Position"] = team_position
+            match_stats["Opponent Position"] = opponent_position
+
+            for statistic in match["statistics"]: # For each stat
+                
+
+                if statistic["participant_id"] == team_id: # If it's for the target team
+                    type_id = statistic["type_id"] # get type id
+                    finder = Type_finder(id=type_id)
+                    type_info = finder.find_type_by_id() # returning the info of the type
+                    type_name = type_info["name"] # getting the types name
+
+                    value = statistic["data"].get("value", 0) # get the value
+
+                    match_stats[type_name] = value # Add to dict for that fixture
+
+            
+            
+            stats[match["id"]] = match_stats # Set it in the dict for that game
+
+
+
+        
+        self.stats = stats # Return dict for df
+
+        return stats
+
+    def softmax(self, z):
+        z = z - np.max(z, axis=1, keepdims=True)  # stability fix
+        z_exp = np.exp(z)
+        return z_exp / np.sum(z_exp, axis=1, keepdims=True)
+
+    def calc_logits(self, betas, X_b):
+            logits = [] # list to store logits for every sample
+
+            for sample in X_b: # go through each row/sample in X_b
+
+                sample_logits = [] # store logits for this sample
+                for beta in betas: # for each set of weights
+                    logit = np.dot(sample, beta)  # dot product multiplication
+                    sample_logits.append(logit) # save logit 
+
+            
+                logits.append(sample_logits) # add logits for this sample/match to main list
+
+            return np.array(logits) 
+
+    def create_model(self):
+        stats = self.stats
+        with open("temp2.json", "w") as f:
+            f.write(json.dumps(stats, indent=4))
+
+        column_names = []
+
+        for match_stats in stats.values(): # for each match in stats
+            for stat_name in match_stats.keys(): # each stat name
+                if stat_name not in column_names: # add it to the column names for df if not already in it
+                    column_names.append(stat_name)
+
+
+        df = pd.DataFrame(
+        columns=column_names
+        )
+
+        for opponent_id in stats: # for each opponent
+            for stat_name in stats[opponent_id].keys(): 
+                df.loc[opponent_id, stat_name] = stats[opponent_id][stat_name] # put each stat in the df
+        
+        y_ = np.array(df["Outcome"].values) # Extracting the dependent variable
+        y = np.empty((0,3))
+
+        for lis in y_: # reshape and put in the y np array
+            lis = np.array(lis).reshape(1, -1)
+            y = np.append(y, lis, axis=0)
+        
+
+
+        df = df.drop("Outcome", axis=1) # Removing it from df
+        df = df.fillna(0.0)
+
+        X = np.array( # Leaving only the independent variables now
+            df
+        )
+
+        
+        stds = np.std(X, axis=0) # Getting standard deviations of each column
+        nonzero_std_mask = stds != 0 # The standard deviations which aren't 0, True in new np array, False if so
+    
+        
+        nonzero_std_mask_ = list(nonzero_std_mask) # Convert to list
+        to_drop = [] # Columns to drop in df
+
+        # This needs to be done because when user input is being entered using the dataframe column names, the values need to line up specifically with each coefficient.
+        for i in range(0, len(nonzero_std_mask_)):
+            if nonzero_std_mask_[i] == False: # If false in here,
+                to_drop.append(list(df.columns)[i]) # Draft it to be dropped from df
+
+        df = df.drop(columns=to_drop) # Drop them
+
+        self.columns = list(df.columns)
+        X = X[:, nonzero_std_mask] # Keeping columns where standard deviation is not 0 (means there is no dispersion)
+        # Also to prevent divide by 0 later on
+
+        std = np.std(X, axis=0) # Now getting the new standard deviation
+
+        mean = np.mean(X, axis=0) # Mean of each column
+
+        self.mean = mean
+        self.std = std
+        
+        X = (X - mean) / std # Scaling the variables
+
+        bias_col = [1 for i in range((X.shape[0]))]
+
+        X_b = np.c_[bias_col, X] # Adding the bias column (intercept)
+        X_b = np.nan_to_num(X_b) # Turning any Nan to numbers
+
+            
+        betas = np.array([ # for each game get a set of random coefficients 
+            [random.random() for i in range(0, len(X_b[0]))],
+            [random.random() for i in range(0, len(X_b[0]))],
+            [random.random() for i in range(0, len(X_b[0]))]
+        ])
+
+        y_hat = self.softmax(self.calc_logits(betas, X_b)) # predicteds
+
+
+        # for outcome, prediction in zip(y, y_hat):   # loop through each sample pair
+        # loss = 0
+        # for i in range(len(prediction)):        # loop over classes for that sample
+        #     loss += -1 * (outcome[i] * np.log(prediction[i]))
+        # total_loss += loss
+
+
+
+        eps = 1e-15
+        # loss draw win
+
+
+
+    
+        # loss_derivatives = 1 / y_hat
+        # softmax_dervatives = y_hat * (1 - y_hat)
+
+        
+        l_rate = 0.1
+        iterations = 5000
+
+        for i in range(iterations): # now train the coefficients
+            logits = self.calc_logits(betas, X_b)
+            y_hat = self.softmax(logits)
+
+            loss = -np.sum(y * np.log(y_hat))
+
+            grad_W = (y_hat - y).T.dot(X_b) / X_b.shape[0]
+
+            betas = betas - l_rate * grad_W
+        
+        # for i in range(0, len(X)):
+        #     for j in range(0, len(column_names)-3):
+        #         print(column_names[j], betas[i][j])
+
+        return betas, y, mean, std
+    
+    def predict_outcome(self, stats):
+        coeficients, outcomes, mean, std = self.create_model() # need mean and std to scale inputted data
+
+
+        sample_data = stats
+        bias_col = [1]
+
+        sample_data = (sample_data - mean) / std
+
+        
+        sample_data_b = np.c_[bias_col, sample_data] # add bias column/intercept
+
+        final_logits = self.calc_logits(coeficients, sample_data_b)
+        probs = self.softmax(final_logits) # get probabilities
+
+        y = probs
+     
+        y = list(y[0])
+        
+        index = y.index(max(y))
+
+        return index
+
+    def final_outcome(self, stats): 
+        win = 0
+        draw = 0
+        loss = 0
+        outcomes = [loss, draw, win]
+
+        for i in range(1, 2): # repeat prediction 100 times to find highest outputted one
+            index = self.predict_outcome(stats)
+            outcomes[index] += 1
+        
+        return outcomes.index(max(outcomes)) # return that
+    
+
+# s = np.array([
+#     [100 for i in range(0, 43)]
+# ])
+# x = PredictOutcome(9)
+# x.get_data()
+
+# print(x.final_outcome(s))
+
 class PredictPlayerPerformance():
     
     def __init__(self, player_id):
@@ -287,6 +563,7 @@ class PredictPlayerPerformance():
         self.prev_ratings = np.delete(self.prev_ratings, -1)
         
         return django_path
+
     # hsv red default (0, 100, value)
     def pick_color(self, rating):
 
