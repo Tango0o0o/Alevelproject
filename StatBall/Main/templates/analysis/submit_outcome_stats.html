@@ -16,11 +16,11 @@
             <div id="outcome">
                 {% if value %}
                     {% if value == 2 %}
-                        <h2>{{team_name}} will win their next game</h2>
+                        <h2>{{team_name}} will win their next game ({{fixture}})</h2>
                     {% elif value == 1 %}
-                        <h2>{{team_name}} will draw their next game</h2>
+                        <h2>{{team_name}} will draw their next game ({{fixture}})</h2>
                     {% else %}
-                        <h2>{{team_name}} will lose their next game</h2>
+                        <h2>{{team_name}} will lose their next game ({{fixture}})</h2>
                     {% endif %}
                 {% endif %}
             </div>
@@ -36,7 +36,7 @@
                         {% for c_name, value  in cleaned_data_dict.items %}
                             <div class="input-group input-group-sm mb-3 grid">
                                 <span class="input-group-text" id="inputGroup-sizing-sm">{{ c_name }}</span>
-                                <input type="number" name="{{ c_name }}" value="{{ value }}" class="form-control stat-input" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <input {% if previous_analysis %}readonly{% endif %} type="number" name="{{ c_name }}" value="{{ value }}" class="form-control stat-input" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                             </div>     
                         {% endfor %}
 
@@ -50,7 +50,7 @@
                     </div>
 
 
-                    <input type="submit" name="Sign up" class="btn btn-success form-control">
+                    <input {% if previous_analysis %}disabled{% endif %} type="submit" name="Sign up" class="btn btn-success form-control">
                     
                     {% if django_path %}
                         <a><img src="{% static django_path %}" alt="Bar chart"></a>

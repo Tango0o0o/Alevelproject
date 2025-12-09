@@ -20,8 +20,7 @@
     width: 100%;
     max-width: none;
     border-radius: 0px;
-    max-height: 92vh; /* or e.g. 90vh */
-    overflow-y: auto;
+
 }
 
 .input-group-text {

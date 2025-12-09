@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+        {% block head %}
+            <title>Statball | {%block title%}Previous analysis{% endblock %}</title> 
+            <link rel="stylesheet" href="{% static 'styling/analysis.css' %}">
+            <link rel="stylesheet" href="{% static 'styling/prev_analysis.css' %}">
+
+        {% endblock %}
+        
+        {% block main-content %}
+               <div class="form-container" id="prev">
+                    {% for analysis in user_analysis %}
+                        <form class="form-group prev_analysis" method="post" action="/previous-analysis/">
+                            {% csrf_token %}
+                            <input class="form-control stat-input" name="analysis_name" type="text" value="{{analysis.name}}" readonly>
+                            <button type="submit" class="btn btn-primary">View</button>
+                        </form>
+                    {% endfor %%}
+               </div>
+
+        {% endblock %}
+</html>

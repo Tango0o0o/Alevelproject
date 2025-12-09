@@ -6,10 +6,44 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import hsv_to_rgb
 import pandas as pd
 import numpy as np, random
+import urllib.request
+from PIL import Image
 import random
+from sklearn.manifold import TSNE
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import matplotlib.image as mpimg
+from io import BytesIO
+import plotly.graph_objects as go
 import time
 YOUR_TOKEN = "p7pnma41hZ54JY3pwMd1GXh3cWykgQYiqUzdVcOlxVcLsvfXblU5B4oTT76M"
 
+# My KNN model
+class KNearestNeighbours:
+
+    def __init__(self, k=3): # k is the number of similar players to find
+        self.k = k
+        self.points = None
+    
+    def fit(self, points): # in KNN, fitting the data is simply just having points
+        self.points = points
+    
+    def closest_player(self, new_point):
+        distances = []
+
+
+        for player in self.points: # for each key (player id) in the points dict
+            for point in self.points[player]: # for each value in the dict off the keys
+    
+                
+                distance = SimilarPlayers.euclidean_distance(point, new_point) # calculate distance
+                distances.append([distance, player]) # add to distances for sorting + classification
+
+        # closest_player = sorted(distances)[:1][0][1] # sort it by the distance, then return the player_id inside the first array
+
+        closest_players = [player[1] for player in sorted(distances)[:self.k]]
+
+        return closest_players
+            
 class Type_finder():
     # binary search
 
@@ -58,13 +92,20 @@ class PredictOutcome():
     def __init__(self, team_id, games=3):
         self.team_id = team_id
         self.team_name = None
+        self.next_fixt_name = None
         self.games = games
         self.stats = None
         self.mean = None
         self.std = None
         self.columns = None
+    
+    def next_opponent(self):
+        upcoming_url = f"https://api.sportmonks.com/v3/football/teams/{self.team_id}?api_token={YOUR_TOKEN}&include=upcoming"
         
+        self.next_fixt_name = requests.get(upcoming_url).json()["data"]["upcoming"][0]["name"]
+
     def get_data(self):
+        self.next_opponent()
         team_id = self.team_id
         games = self.games # number of recent results to use for ML
         team_results = requests.get(f"https://api.sportmonks.com/v3/football/teams/{team_id}?api_token={YOUR_TOKEN}&include=latest.statistics;latest.participants").json() # Teams results
@@ -320,7 +361,248 @@ class PredictOutcome():
         
         return outcomes.index(max(outcomes)) # return that
     
+class SimilarPlayers():
+    def __init__(self, new_point_id, target_team_id):
+        self.players_stats = []
+        self.new_point_id = new_point_id
+        self.target_team_id = target_team_id
+        self.this_season_id = 25583
+        self.player_data = None
+        self.df = None
+        self.images = None
+        self.player_name = None
+        self.team_name = None
 
+        
+    
+    def get_data(self):
+        
+        get_team = f"https://api.sportmonks.com/v3/football/squads/teams/{self.target_team_id}?api_token={YOUR_TOKEN}"
+
+        squad = requests.get(get_team).json() # Getting the players in the squad 
+        self.team_name = requests.get(f"https://api.sportmonks.com/v3/football/teams/{self.target_team_id}?api_token={YOUR_TOKEN}").json()["data"]["name"]
+        for player in squad["data"]:
+            player_id = player["player_id"] # for each player, returng the player id
+            player_stats_url =  f"https://api.sportmonks.com/v3/football/players/{player_id}?api_token={YOUR_TOKEN}&include=statistics.details&filters=playerstatisticSeasons:{self.this_season_id}" #returning the statistics for each player filtered on this season
+
+            player_stats = requests.get(player_stats_url).json() # return that players stats
+            self.players_stats.append(player_stats["data"]) # add the stats to an array
+            
+        with open("temp.json", "w") as f:
+            f.write(json.dumps(self.players_stats, indent=4)) # save
+        
+        
+        with open("temp.json", "r") as f:
+            self.player_data = json.load(f)
+        
+    
+     # getting player by id or name from api
+    
+
+    # creating the dataframe...
+        # create df✅ -> go statistics ✅ -> details -> type_id✅ -> fetch stat name✅ -> add column if it doesn't exist✅ -> populate with player value✅
+
+        # PlayerName Stat1 Stat2 ... Statn
+
+    def get_player(self, player_id=None, name=None):
+        if player_id != None: # if no id, then use name instead
+            url = f"https://api.sportmonks.com/v3/football/players/{player_id}?api_token={YOUR_TOKEN}&include=statistics.details&filters=playerstatisticSeasons:25583"
+            req = requests.get(url).json()
+        
+        return req
+
+    def add_player_to_df(self, player_id):
+            
+            df = self.df
+            player_data = self.get_player(player_id=player_id)
+            
+            df.loc[player_id] = 0.0 # defaul to 0 of existing stats
+            self.player_name = player_data["data"]["name"]
+
+            for detail in player_data["data"]["statistics"][0]["details"]: # get their statistic details, return the type id and get info
+                
+                type_id = detail["type_id"] # getting the type id
+
+                
+                finder = Type_finder(id=type_id)
+                type_info = finder.find_type_by_id() # returning the info of the type
+                type_name = type_info["name"] # getting the types name
+                
+                
+                value = detail["value"].get("total", 0) # getting the value associated with that type
+
+
+                
+                if type_name not in df.columns: # check if column doesn't exist...
+                    print("No column")
+                else:
+
+                    df.loc[player_id, type_name] = float(value) # set the players stat to the value, using the player id as the index, in the colums typename
+            
+            return df
+    
+    def create_player_dataframe(self):
+            player_data = self.player_data
+            df = pd.DataFrame() 
+
+            for player in player_data: # every player
+                
+                # not sure which to use, will just leave both here for now
+                player_id = player["id"] # getting the player id
+                player_name = player["name"] # getting the player name
+
+                for detail in player["statistics"][0]["details"]: # get their statistic details, return the type id and get info
+                    
+                    type_id = detail["type_id"] # getting the type id
+
+                    finder = Type_finder(id=type_id)
+                    type_info = finder.find_type_by_id() # returning the info of the type
+                    
+                    type_name = type_info["name"] # getting the types name
+                    
+                    
+                    value = detail["value"].get("total", 0) # getting the value associated with that type
+
+                    
+                    
+                    if type_name not in df.columns: # check if column doesn't exist...
+                        df[type_name] = 0.0 # add column to df if doesn't exist, default value to 0
+
+                    df.loc[player_id, type_name] = float(value) # set the players stat to the value, using the player id as the index, in the colums typename
+                
+            df = df.fillna(0) # fill missing values with 0, doing this as if the api returns none, it isn't an unknown, the stat doesn't exist for that player as they have none
+            self.df = df
+            
+
+    # Standard scaler formula
+    def standard_scaler(self, feature, point):
+        std = np.std(feature)
+        if std == 0: # prevent invalid division
+            return 0  
+
+        return ( point - np.mean(feature)  ) / std
+    
+    def create_points(self):
+        self.points = {} # dictionary of points
+
+
+        for player_id, group in self.df.groupby(self.df.index):# for each playerd_id in the indexes of the df and the values of it...
+            self.points[player_id] = group.values.tolist() # set the key of the player id to the values of it in the df, (in a list)
+
+        self.df = self.add_player_to_df(player_id=self.new_point_id) # creating new point in the df, becuase only certain columns are needed
+    
+        self.new_point = self.df.loc[self.new_point_id].values.tolist() # features of the point/player
+
+    def euclidean_distance(p, q): # 2 points
+            return np.sqrt(np.sum((np.array(p) - np.array(q))** 2))
+
+    def perform_analysis(self):
+        self.get_data()
+        self.create_player_dataframe()
+        self.create_points()
+        
+
+
+
+    def scatter_plot(self):
+
+        clf = KNearestNeighbours()
+        clf.fit(self.points) # Adding points to the class
+
+        closest_players = clf.closest_player(self.new_point) # these are the player ids
+        
+        df = self.df
+        points_list = [df.loc[closest_players[i]].tolist() for i in range(0, len(closest_players))]
+        points_list.append(df.loc[self.new_point_id].tolist())
+
+        # Get the closest points values and convert to numpy array
+        closest_points = np.array(points_list)
+        #new_point
+
+        closest_points_reduced = TSNE(n_components=2, perplexity=2.0).fit_transform(closest_points) # reducing dimensions to 2
+
+
+        plt.scatter(x=[i[0] for i in closest_points_reduced], y=[i[1] for i in closest_points_reduced])
+
+        with open("temp.json", "r") as f: # getting image paths for each player from database
+            player_data = json.load(f)
+
+            images = [player["image_path"] for player in player_data if player["id"] in closest_players]
+            images.append(
+
+                requests.get(f"https://api.sportmonks.com/v3/football/players/{self.new_point_id}?api_token={YOUR_TOKEN}").json()["data"]["image_path"]
+
+            )
+        
+        def load_image(img_path):
+            if img_path.startswith("http"): # If the image is a url
+                with urllib.request.urlopen(img_path) as url: # Open it,
+                    img = Image.open(BytesIO(url.read())) # And get the image as bytes
+                return np.array(img) # Then convert to a numpy array
+            else:
+                return mpimg.imread(img_path) # probably never but if local load normally
+
+        for point, img_path in zip(closest_points_reduced, images):
+            img = load_image(img_path) # load image
+            imgbox = OffsetImage(img, zoom=0.15) # Container for image to display
+            ab = AnnotationBbox(imgbox, (point[0], point[1]), frameon=False) # Then annotate it at the coordinates
+            plt.gca().add_artist(ab) # Then add it to the plot
+
+        # plt.show()
+
+        categories = df.columns # The categories for the radar chart
+
+        fig = go.Figure() # Newfigure/annotation to the graph
+        
+        flat_cols = []
+
+        for i in range(0, closest_points.shape[1]):
+            mx = max(closest_points[:,i])
+            mi = min(closest_points[:,i])
+
+
+            for j in range(0, closest_points.shape[0]):
+                
+                if mx == mi:
+                    if i not in flat_cols:
+                        flat_cols.append(i)
+                else:
+                    closest_points[j, i] = ( closest_points[j, i] - mi) / (mx - mi)
+
+        closest_points = np.delete(closest_points, flat_cols, axis=1)
+
+
+        closest_players.append(self.new_point_id)
+
+        for i in range(0, len(closest_players)): # Froe each player,
+            fig.add_trace(go.Scatterpolar( # Add a radar trace
+
+                r=closest_points[i], # In which the radial axis is the values of each feature
+                theta=categories, # And the other axis is the name of the features themselves 
+                fill="toself", # Connects the endpoints of the trace into a closed shape
+                name=str(requests.get(f"https://api.sportmonks.com/v3/football/players/{closest_players[i]}?api_token={YOUR_TOKEN}").json()["data"]["display_name"]) # And then the name of the trace
+                
+
+            ))
+
+
+        # Apply the changes to the figure
+        fig.update_layout(
+
+            polar=dict(
+                radialaxis=dict(
+                    visible = True,
+                    range=[0,1] 
+                )
+            ),
+            title=dict(text="Player comparison based on similarity score 0-1")
+
+        )
+        
+        return fig
+        
+
+        
 # s = np.array([
 #     [100 for i in range(0, 43)]
 # ])
@@ -378,6 +660,7 @@ class PredictPlayerPerformance():
             for player in fixture["lineups"]: # For each player in the lineups
                 if player["player_id"] == self.player_id: # Check if its the player we're looking for
                     player_name = player["player_name"] # If it is, get the name
+                    
                     for detail in player["details"]: # For all the statistics of the player
                         type_id = detail["type_id"] # get type id
                         finder = Type_finder(id=type_id)

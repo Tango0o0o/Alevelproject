@@ -121,6 +121,7 @@ input {
 .sidebar {
     box-shadow: 0 4px 10px rgba(0,0,0,0.12);
     padding-top: 10px;
+    height: 100vh;
     flex-shrink: 10;
 }
 

@@ -17,14 +17,20 @@
 
                 <form class="form-group" method="post" action="/predict-performance-result/">
                     {% csrf_token %}
-                    <h3>Enter player stats</h3>
+                    <h3>
+                        {% if previous_analysis %}
+                            {{analysis_name}}
+                        {% else %}
+                            Enter player stats
+                        {% endif %}
+                    </h3>
 
                     <div class="e">
                         
                         {% for c_name, value  in cleaned_data_dict.items %}
                             <div class="input-group input-group-sm mb-3 grid">
                                 <span class="input-group-text" id="inputGroup-sizing-sm">{{ c_name }}</span>
-                                <input type="number" name="{{ c_name }}" value="{{ value }}" class="form-control stat-input" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
+                                <input {% if previous_analysis %}readonly{% endif %} type="number" name="{{ c_name }}" value="{{ value }}" class="form-control stat-input" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">
                             </div>     
                         {% endfor %}
 
@@ -38,7 +44,7 @@
                     </div>
 
 
-                    <input type="submit" name="Sign up" class="btn btn-success form-control">
+                    <input type="submit" {% if previous_analysis %}disabled{% endif %} name="Sign up" class="btn btn-success form-control">
                     
                     {% if django_path %}
                         <a><img src="{% static django_path %}" alt="Bar chart"></a>

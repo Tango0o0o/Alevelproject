@@ -1,0 +1,11 @@
+.form-container {
+    width: 1500px;
+    padding: 5px;
+}
+
+.prev_analysis {
+    margin-top: 0px;
+    width: 100%;
+    display: flex;
+    gap: 5px;
+}

@@ -1,7 +1,12 @@
 .form-container {
     margin-top: 20px;
+    max-height: 90vh; /* or e.g. 90vh */
+    overflow-y: auto;
 }
+
 
 #outcome {
     margin: auto;
 }
+
+

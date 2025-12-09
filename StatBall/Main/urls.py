@@ -12,5 +12,7 @@ urlpatterns = [
     path("similar-players/", views.sim_players, name="similar-players"),
     path("predict-player/", views.pred_player, name="predict-player"), 
     path("predict-performance-result/", views.pred_performance_result, name="predict-performance-result"),
+
+    path("previous-analysis/", views.prev_analysis, name="previous-analysis"),
     
 ]

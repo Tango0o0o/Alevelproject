@@ -16,7 +16,14 @@
 
                 <form class="form-group" method="post" action="/similar-players/">
                     {% csrf_token %}
-                    <h3>Find similar players</h3>
+                    <h3>
+                        {% if previous_analysis %}
+                            {{analysis_name}}
+                        {% else %}
+                            Find similar players
+                        {% endif %}
+                        
+                    </h3>
 
                     {{form.as_p}}
 
@@ -25,8 +32,9 @@
                         <img>
 
                     {% endif %}
-
-                    <input type="submit" name="Sign up" class="btn btn-success form-control">
+                    
+                    
+                    <input {% if previous_analysis %}disabled{% endif %} type="submit"  name="Sign up" class="btn btn-success form-control">
                     
 
                 </form>
