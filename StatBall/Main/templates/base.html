@@ -17,7 +17,7 @@
     </head>
 
     <body>
-        <!-- Used a nested flexbox of "bottom" inside the body to arrange in column, then row -->
+ 
         
         {% if logged_in %}
         <div class="sidebar">
@@ -34,9 +34,15 @@
                 </a>
             </li>
             <li>
-                <a href="#" class="nav-link link-dark">
+                <a href="/add-player" class="nav-link link-dark">
                 <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
                 Add to database
+                </a>
+            </li>
+            <li>
+                <a href="/view-players" class="nav-link link-dark">
+                <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"></use></svg>
+                View players
                 </a>
             </li>
             <li class="nav-item">

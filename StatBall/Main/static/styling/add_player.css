@@ -1,0 +1,39 @@
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-container {
+    padding: 15px;
+    width: 1500px;
+}
+
+.matches-container {
+    display: flex;
+    gap: 2rem;
+}
+
+.stat-labels .stat-label {
+    padding: 10px 0;
+    font-weight: 500;
+}
+
+.matches-player-data {
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.container {
+    width: 80%;
+    max-width: 900px;
+    margin: 0 auto;              /* centers horizontally */
+    padding: 20px;
+
+    max-height: 85vh;            /* keeps container height fixed */
+    overflow-y: auto;            /* scrolls when too many form-containers */
+
+
+
+}
+

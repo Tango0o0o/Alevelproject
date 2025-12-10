@@ -9549,17 +9549,6 @@
                             }
                         },
                         {
-                            "id": 1814927285,
-                            "fixture_id": 19427602,
-                            "player_id": 4598752,
-                            "team_id": 3,
-                            "lineup_id": 14671685941,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 1
-                            }
-                        },
-                        {
                             "id": 1814983301,
                             "fixture_id": 19427602,
                             "player_id": 4598752,
@@ -9858,17 +9847,6 @@
                             "type_id": 98,
                             "data": {
                                 "value": 3
-                            }
-                        },
-                        {
-                            "id": 1814717135,
-                            "fixture_id": 19427602,
-                            "player_id": 37590634,
-                            "team_id": 3,
-                            "lineup_id": 14671685943,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 2
                             }
                         },
                         {
@@ -11519,17 +11497,6 @@
                             }
                         },
                         {
-                            "id": 1814191606,
-                            "fixture_id": 19427602,
-                            "player_id": 97669,
-                            "team_id": 3,
-                            "lineup_id": 14671665389,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 1
-                            }
-                        },
-                        {
                             "id": 1814180569,
                             "fixture_id": 19427602,
                             "player_id": 97669,
@@ -12208,17 +12175,6 @@
                             "team_id": 3,
                             "lineup_id": 14671665391,
                             "type_id": 117,
-                            "data": {
-                                "value": 1
-                            }
-                        },
-                        {
-                            "id": 1814144783,
-                            "fixture_id": 19427602,
-                            "player_id": 4254,
-                            "team_id": 3,
-                            "lineup_id": 14671665391,
-                            "type_id": 9706,
                             "data": {
                                 "value": 1
                             }
@@ -13886,17 +13842,6 @@
                             }
                         },
                         {
-                            "id": 1814163846,
-                            "fixture_id": 19427602,
-                            "player_id": 162536,
-                            "team_id": 9,
-                            "lineup_id": 14671665395,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 1
-                            }
-                        },
-                        {
                             "id": 1814180570,
                             "fixture_id": 19427602,
                             "player_id": 162536,
@@ -15039,17 +14984,6 @@
                             }
                         },
                         {
-                            "id": 1814100901,
-                            "fixture_id": 19427602,
-                            "player_id": 21072805,
-                            "team_id": 9,
-                            "lineup_id": 14671676620,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 6
-                            }
-                        },
-                        {
                             "id": 1814110240,
                             "fixture_id": 19427602,
                             "player_id": 21072805,
@@ -15362,17 +15296,6 @@
                             }
                         },
                         {
-                            "id": 1814119515,
-                            "fixture_id": 19427602,
-                            "player_id": 23697990,
-                            "team_id": 9,
-                            "lineup_id": 14671665398,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 5
-                            }
-                        },
-                        {
                             "id": 1814117586,
                             "fixture_id": 19427602,
                             "player_id": 23697990,
@@ -15625,17 +15548,6 @@
                             "team_id": 9,
                             "lineup_id": 14671665399,
                             "type_id": 117,
-                            "data": {
-                                "value": 1
-                            }
-                        },
-                        {
-                            "id": 1815040701,
-                            "fixture_id": 19427602,
-                            "player_id": 23269737,
-                            "team_id": 9,
-                            "lineup_id": 14671665399,
-                            "type_id": 9706,
                             "data": {
                                 "value": 1
                             }
@@ -16790,17 +16702,6 @@
                             "type_id": 105,
                             "data": {
                                 "value": 3
-                            }
-                        },
-                        {
-                            "id": 1815054357,
-                            "fixture_id": 19427602,
-                            "player_id": 37527169,
-                            "team_id": 9,
-                            "lineup_id": 14671685963,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 1
                             }
                         },
                         {
@@ -17963,17 +17864,6 @@
                             }
                         },
                         {
-                            "id": 1814295208,
-                            "fixture_id": 19427602,
-                            "player_id": 336133,
-                            "team_id": 9,
-                            "lineup_id": 14671665405,
-                            "type_id": 9706,
-                            "data": {
-                                "value": 2
-                            }
-                        },
-                        {
                             "id": 1814384134,
                             "fixture_id": 19427602,
                             "player_id": 336133,
@@ -18177,7 +18067,7 @@
             "meta": {
                 "trial_ends_at": "2025-09-15 18:39:49",
                 "ends_at": null,
-                "current_timestamp": 1765225502
+                "current_timestamp": 1765311050
             },
             "plans": [
                 {
@@ -18191,8 +18081,8 @@
         }
     ],
     "rate_limit": {
-        "resets_in_seconds": 3592,
-        "remaining": 2998,
+        "resets_in_seconds": 3600,
+        "remaining": 2999,
         "requested_entity": "Fixture"
     },
     "timezone": "UTC"

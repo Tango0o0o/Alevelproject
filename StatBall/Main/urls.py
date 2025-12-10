@@ -14,5 +14,7 @@ urlpatterns = [
     path("predict-performance-result/", views.pred_performance_result, name="predict-performance-result"),
 
     path("previous-analysis/", views.prev_analysis, name="previous-analysis"),
+    path("add-player/", views.add_player, name="add-player"),
+    path("view-players/", views.user_players_view, name="view-players"),
     
 ]

@@ -398,6 +398,7 @@ class SimilarPlayers():
     
      # getting player by id or name from api
     
+        
 
     # creating the dataframe...
         # create df✅ -> go statistics ✅ -> details -> type_id✅ -> fetch stat name✅ -> add column if it doesn't exist✅ -> populate with player value✅

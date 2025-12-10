@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+        {% block head %}
+            <title>Statball | {%block title%}Add player to database{% endblock %}</title>
+            <link rel="stylesheet" href="{% static 'styling/analysis.css' %}">
+            <link rel="stylesheet" href="{% static 'styling/add_player.css' %}">
+        {% endblock %}
+        
+        {% block main-content %}
+            <h2 style="margin-top: 20px;">{{success}}</h2>
+            <div class="form-container">
+
+                <form class="form-group" method="post" action="/add-player/">
+                    {% csrf_token %}
+
+                    <div class="player-input-container">
+                        <input required type="text" class="form-control stat-input" id="player-name" name="player_name" placeholder="Enter player name">
+                    </div>
+                    <div class="matches-container">
+                        
+                        {% for i in '123'|make_list %}
+
+                            <div class="match-box">
+                                <h2>Match {{i}}</h2>
+
+                                <div class="stats-list">
+                                    <input required ="number" class="form-control stat-input" name="Goals{{i}}" placeholder="Goals">
+                                    <input required type="number" class="form-control stat-input" name="Assists{{i}}" placeholder="Assists">
+                                    <input required type="number" class="form-control stat-input" name="Touches{{i}}" placeholder="Touches">
+                                    <input required type="number" class="form-control stat-input" name="Minutes Played{{i}}" placeholder="Minutes Played">
+                                    <input required type="number" class="form-control stat-input" name="Offsides{{i}}" placeholder="Offsides">
+                                    <input required type="number" class="form-control stat-input" name="Duels Lost{{i}}" placeholder="Duels Lost">
+                                    <input required type="number" class="form-control stat-input" name="Big Chances Created{{i}}" placeholder="Big Chances Created">
+                                    <input required type="number" class="form-control stat-input" name="Shots Off Target{{i}}" placeholder="Shots Off Target">
+                                </div>
+                            </div>
+                        {% endfor %}
+                        
+
+                    </div>
+                                    
+                    <input {% if previous_analysis %}disabled{% endif %} type="submit"  name="Sign up" class="btn btn-success form-control">
+                    
+                </form>
+            </div>
+
+            {% if django_path %}
+                <a><img src="{% static django_path %}" alt="Graph"></a>
+            {% elif error %}
+                <h4>{{ error }}</h4>
+            {% endif %}
+        {% endblock %}
+</html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Player Stats Input</title>
+</head>
+<body>
+
+   
+</body>
+</html>

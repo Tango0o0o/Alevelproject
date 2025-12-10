@@ -1,0 +1,78 @@
+{
+    "data": {
+        "19": {
+            "Player": {
+                "player_name": "Player",
+                "id": 68963,
+                "stats": [
+                    {
+                        "Goals": 3,
+                        "Assists": 3,
+                        "Touches": 3,
+                        "Minutes Played": 44,
+                        "Offsides": 5,
+                        "Duels Lost": 6,
+                        "Big Chances Created": 6,
+                        "Shots Off Target": 77
+                    },
+                    {
+                        "Goals": 7,
+                        "Assists": 7,
+                        "Touches": 65,
+                        "Minutes Played": 4,
+                        "Offsides": 5,
+                        "Duels Lost": 66,
+                        "Big Chances Created": 6,
+                        "Shots Off Target": 5
+                    },
+                    {
+                        "Goals": 66,
+                        "Assists": 7,
+                        "Touches": 66,
+                        "Minutes Played": 5,
+                        "Offsides": 5,
+                        "Duels Lost": 55,
+                        "Big Chances Created": 5,
+                        "Shots Off Target": 5
+                    }
+                ]
+            },
+            "Myplayer": {
+                "player_name": "Myplayer",
+                "id": 80927,
+                "stats": [
+                    {
+                        "Goals": 1,
+                        "Assists": 5,
+                        "Touches": 5,
+                        "Minutes Played": 6,
+                        "Offsides": 67,
+                        "Duels Lost": 3,
+                        "Big Chances Created": 77,
+                        "Shots Off Target": 8
+                    },
+                    {
+                        "Goals": 88,
+                        "Assists": 7,
+                        "Touches": 65,
+                        "Minutes Played": 5,
+                        "Offsides": 55,
+                        "Duels Lost": 6,
+                        "Big Chances Created": 77,
+                        "Shots Off Target": 8
+                    },
+                    {
+                        "Goals": 88,
+                        "Assists": 7,
+                        "Touches": 652525,
+                        "Minutes Played": 66,
+                        "Offsides": 6,
+                        "Duels Lost": 6626,
+                        "Big Chances Created": 6,
+                        "Shots Off Target": 66
+                    }
+                ]
+            }
+        }
+    }
+}

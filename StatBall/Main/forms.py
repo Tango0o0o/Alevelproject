@@ -246,4 +246,4 @@ class PredictPlayerPerformanceForm(SimilarPlayersForm): # Just inherit stuff fro
 class PredictMatchOutcomeForm(SimilarPlayersForm): # Just inherit stuff from the Similar players form
     
     player_name = None # except we don't need a player name
-    
+

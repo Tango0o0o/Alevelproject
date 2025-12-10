@@ -1,0 +1,49 @@
+{% extends 'base.html'%}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+{% block head %}
+        <title>Statball | {%block title%}Your Players{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'styling/analysis.css' %}">
+        <link rel="stylesheet" href="{% static 'styling/add_player.css' %}">
+{% endblock %}
+<body>
+
+
+{% if error %}
+    <p style="color:red;">{{ error }}</p>
+{% endif %}
+
+{% block main-content %}
+    <div class="container">
+        <!-- If players passed in, -->
+        {% if players %}
+            <!-- for each player in the dict -->
+                {% for player_name, pdata in players.items %}
+                    <div class="form-container">
+                        <!-- player name and id -->
+                        <h2>{{ pdata.player_name }} (ID: {{ pdata.id }})</h2>
+
+                        <h3>Match Stats:</h3>
+                        <div class="matches-player-data">
+                            
+                            <!-- show their stats in a list for each match -->
+                            {% for match in pdata.stats %}
+                                    <div class="match-box">
+                                        <h4>Match {{ forloop.counter }}</h4>
+                                        {% for k, v in match.items %}
+                                            <p class="stat"><strong>{{ k }}:</strong> {{ v }}</p>
+                                        {% endfor %}
+                                    </div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}
+
+</body>
+</html>

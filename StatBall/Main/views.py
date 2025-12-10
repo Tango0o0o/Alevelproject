@@ -10,11 +10,12 @@ import datetime
 import requests, json
 import csv
 import matplotlib.pyplot as plt
+import random
 from sklearn.manifold import TSNE
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import matplotlib.image as mpimg
 from PIL import Image
-import urllib.request
+import urllib.request 
 from io import BytesIO
 import plotly.graph_objects as go
 import plotly.express as px
@@ -382,3 +383,72 @@ def prev_analysis(req):
                 "previous_analysis" : True
                 # Passing through the column names & values back into the page so the user doesn't have to reenter every value if they want to adjust parameters
             })
+
+def add_player(req):
+    
+    if req.method == "GET":
+        return render(req, "analysis/add_player.html", # finding similar players
+            {
+                "logged_in" : is_logged_in(req),
+            })
+    else:
+        player_name = None
+        match_data = [{}, {}, {}] # data for 3 matches
+
+        for key, value in req.POST.items():
+            value = list(value)
+            if key == "csrfmiddlewaretoken" or key == "Sign up": # ignore these, they're part of the form but not for the model
+                continue
+            elif key == "player_name": # player name gets in the form ["N", "a", "m", "e"], so needs to
+                player_name = "".join(value).lower().capitalize()
+            else:
+                for i in range(0,4): # skip, 0, them match1, 2 and 3
+                    if int(key[-1]) == i: # if its that integer
+                        match_data[i-1][key[:-1]] = int("".join(value)) # stats will be in the form "Goals" : ["2", "2"]
+                        # but is meant to be one number, so i will join them together to make one number, adding it to a dict of values for the match stats
+
+        with open("UserAddedPlayers.json", "r") as f:
+            player_data = json.load(f)
+
+        user_id = str(req.session.get("user_id"))
+        user_Data = player_data["data"].get(user_id)
+
+        # If user doesnt have their own players dict, create one
+        if user_Data == None:
+            player_data["data"][user_id] = {}
+
+        # Storing data for the users player
+        player_data["data"][user_id][player_name] = {}
+        player_data["data"][user_id][player_name]["player_name"] = player_name
+        player_data["data"][user_id][player_name]["id"] = round((len(player_name) / random.random()) * 10000) # random like id r that player
+        player_data["data"][user_id][player_name]["stats"] = match_data
+
+        with open("UserAddedPlayers.json", "w") as f:
+            f.write(json.dumps(player_data, indent=4)) # save
+
+        return render(req, "analysis/add_player.html", # finding similar players
+            {
+                "logged_in" : is_logged_in(req),
+                "success" : f"Succesfully added {player_name} to database"
+            })
+        
+def user_players_view(req):
+    # Identify logged-in user 
+    user_id = str(req.session.get("user_id"))   
+
+    with open("UserAddedPlayers.json", "r") as f:
+        full_data = json.load(f)
+
+    # Make sure user exists in JSON
+    if user_id not in full_data["data"]:
+        return render(req, "analysis/view_players.html", {"players": None, "error": "No players found for your account."})
+
+    # Extract the user’s players 
+    user_players = full_data["data"][user_id]
+
+    # pass all their players into the html
+    return render(req, "analysis/view_players.html", {"players": user_players, "user_id": user_id, "logged_in" : is_logged_in(req)})
+
+
+
+#  'player_name': ['Player'], 'Goals': ['1', '2', ''], 'Assists': ['1', '2', '3'], 'Touches': ['1', '2', '3'], 'Minutes Played': ['1', '2', '3'], 'Aerials Won Percentage': ['1', '2', '33'],
